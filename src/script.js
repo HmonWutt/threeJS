@@ -5,7 +5,10 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import * as TWEEN from "@tweenjs/tween.js";
 import { hover } from "./starHover";
 import { click } from "./starClick";
-import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import {
+  CSS2DRenderer,
+  CSS2DObject,
+} from "three/examples/jsm/renderers/CSS2DRenderer.js";
 
 /**
  * Debug
@@ -44,24 +47,71 @@ const sizes = {
   width: window.innerWidth,
   height: window.innerHeight,
 };
+const renderer = new THREE.WebGLRenderer({
+  canvas: canvas,
+  alpha: true,
+});
+renderer.setSize(sizes.width, sizes.height);
+
+const iframeRenderer = new CSS2DRenderer();
+iframeRenderer.setSize(sizes.width, sizes.height);
+const parent = document.querySelector("#myprojects");
+parent.appendChild(iframeRenderer.domElement);
+var div = document.createElement("div");
+div.setAttribute("id", "iframe-container");
+div.style.width = "380px";
+div.style.height = "280px";
+
+//div.style.backgroundColor = "#000";
+
+var iframe = document.createElement("iframe");
+
+iframe.style.width = "380px";
+iframe.style.height = "280px";
+iframe.style.border = "0px";
+iframe.src = "https://hmonwutt.github.io/frontend.io/";
+div.appendChild(iframe);
+
+var object = new CSS2DObject(div);
+
 let star, star_1, star_2;
 
 const gltfLoader = new GLTFLoader();
 gltfLoader.load("/models/Keys.glb", (glb) => {
   star = glb.scene;
-  star.scale.set(0.3, 0.3, 0.3);
-  star.position.set(0.5, -0.2, 1);
-  star.rotateX(1.25);
+  star.scale.set(0.2, 0.2, 0.2);
+  star.position.set(0.5, -0.2, 6);
+
   star_1 = star.clone();
-  star_1.position.set(-1, -4, 1);
-  star_1.rotateZ(-0.025);
+  star.rotateX(1);
+  star_1.position.set(-1, -4, 6);
+  star_1.rotateX(-4.8);
+  star_1.rotateZ(-0.5);
 
   star_2 = star.clone();
-  star_2.rotateY(0.5);
-  star_2.position.set(0.5, -8, 1);
+  star_2.scale.set(0.2, 0.2, 0.2);
+  star_2.rotateY(-0.25);
+  star_2.position.set(-1, -12, 6);
+
   scene.add(star_1, star_2);
   scene.add(star);
 });
+gltfLoader.load("/models/retro_pc_monitor.glb", (glb) => {
+  console.log("added");
+  const laptop = glb.scene;
+  const laptopGroup = new THREE.Group();
+  laptop.scale.set(6, 6, 1);
+  console.log(object);
+  //object.position.set(-2, 0, 0);
+
+  object.position.set(-2, -10.2, 0);
+  //laptopGroup.add(laptop, object);
+  laptop.position.set(1.06, -8.96, 6);
+
+  scene.add(object, laptop);
+});
+
+//screen.position.set(0, -9.5, 1.1);
 
 /**
  * Test cube
@@ -131,20 +181,13 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   100
 );
-camera.position.z = 6;
+camera.position.z = 10;
 scene.add(cameraGroup);
 cameraGroup.add(camera);
 
 /**
  * Renderer
  */
-const renderer = new THREE.WebGLRenderer({
-  canvas: canvas,
-  alpha: true,
-});
-renderer.setSize(sizes.width, sizes.height);
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-const controls = new OrbitControls(camera, renderer.domElement);
 
 /**
  * Animate
@@ -228,6 +271,7 @@ window.addEventListener("resize", () => {
 
   // Update renderer
   renderer.setSize(sizes.width, sizes.height);
+  iframeRenderer.setSize(sizes.width, sizes.height);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 });
 
@@ -320,15 +364,16 @@ const tick = (t) => {
   // }
   camera.position.y = (-scrollY / sizes.height) * objectDistance;
 
-  const parallaxX = cursor.x * 0.5;
-  const parallaxY = -cursor.y * 0.5;
-  cameraGroup.position.x +=
-    (parallaxX - cameraGroup.position.x) * 5 * deltaTime;
-  cameraGroup.position.y +=
-    (parallaxY - cameraGroup.position.y) * 5 * deltaTime;
+  // const parallaxX = cursor.x * 0.5;
+  // const parallaxY = -cursor.y * 0.5;
+  // cameraGroup.position.x +=
+  //   (parallaxX - cameraGroup.position.x) * 3 * deltaTime;
+  // cameraGroup.position.y +=
+  //   (parallaxY - cameraGroup.position.y) * 3 * deltaTime;
 
   // Render
   renderer.render(scene, camera);
+  iframeRenderer.render(scene, camera);
 
   // Call tick again on the next frame
   window.requestAnimationFrame(tick);

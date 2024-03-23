@@ -33,3 +33,46 @@ html {
 section:nth-child(odd) {
   justify-content: flex-end;
 }
+#myprojects {
+  position: relative;
+  display: flex;
+  
+}
+iframe-container {
+  display: flex;
+}
+/* iframe {
+  min-height: 80vh;
+
+  transform: scale(0.7);
+  box-shadow: 20px 20px rgba(0, 0, 0, 0.15);
+  transition: all 0.4s ease;
+
+   -ms-zoom: 0.7;
+  -moz-transform: scale(0.6);
+  -moz-transform-origin: 0 0;
+  -o-transform: scale(0.7);
+  -o-transform-origin: 0 0;
+  -webkit-transform: scale(0.7);
+  -webkit-transform-origin: 0 0; 
+  margin: auto;
+}
+iframe:hover {
+  border-radius: 0% 0% 50% 50% / 0% 0% 5% 5%;
+  box-shadow: 10px 10px rgba(253, 249, 249, 0.25);
+}
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+}
+.iframe-container {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+}
+
+#skills {
+} */
