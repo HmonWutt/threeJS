@@ -52,27 +52,45 @@ const renderer = new THREE.WebGLRenderer({
   alpha: true,
 });
 renderer.setSize(sizes.width, sizes.height);
-
-const iframeRenderer = new CSS2DRenderer();
-iframeRenderer.setSize(sizes.width, sizes.height);
-const parent = document.querySelector("#myprojects");
-parent.appendChild(iframeRenderer.domElement);
-var div = document.createElement("div");
-div.setAttribute("id", "iframe-container");
-div.style.width = "380px";
-div.style.height = "280px";
-
-//div.style.backgroundColor = "#000";
-
-var iframe = document.createElement("iframe");
-
-iframe.style.width = "380px";
-iframe.style.height = "280px";
-iframe.style.border = "0px";
+const iframe = document.querySelector("iframe");
 iframe.src = "https://hmonwutt.github.io/frontend.io/";
-div.appendChild(iframe);
+const iframeRenderer = new CSS2DRenderer();
+const buttons = document.querySelectorAll("span");
+for (const button of buttons) {
+  button.addEventListener("click", () => {
+    const buttonID = button.getAttribute("id");
+    switch (buttonID) {
+      case "one":
+        iframe.src = "https://hmonsworld.link";
+        break;
+      case "two":
+        iframe.src = "https://choretracker.se";
+        break;
+      case "three":
+        iframe.src = "https://hmonwutt.github.io/frontend.io/";
+        break;
+    }
+  });
+}
+// iframeRenderer.setSize(sizes.width, sizes.height);
+// const parent = document.querySelector("#myprojects");
+// document.body.appendChild(iframeRenderer.domElement);
+// var div = document.createElement("div");
+// div.setAttribute("id", "iframe-container");
+// div.style.width = "55vw";
+// div.style.height = "70vh";
 
-var object = new CSS2DObject(div);
+// var iframe = document.createElement("iframe");
+
+// iframe.style.width = "29vw";
+// iframe.style.height = "50vh";
+// iframe.style.border = "0px";
+// iframe.src = "https://hmonwutt.github.io/frontend.io/";
+// div.appendChild(iframe);
+
+// var object = new CSS2DObject(div);
+
+// scene.add(object);
 
 let star, star_1, star_2;
 
@@ -80,36 +98,36 @@ const gltfLoader = new GLTFLoader();
 gltfLoader.load("/models/Keys.glb", (glb) => {
   star = glb.scene;
   star.scale.set(0.2, 0.2, 0.2);
-  star.position.set(0.5, -0.2, 6);
+  star.position.set(0.5, -0.2, 1);
 
   star_1 = star.clone();
   star.rotateX(1);
-  star_1.position.set(-1, -4, 6);
+  star_1.position.set(-1, -4, 1);
   star_1.rotateX(-4.8);
   star_1.rotateZ(-0.5);
 
   star_2 = star.clone();
   star_2.scale.set(0.2, 0.2, 0.2);
   star_2.rotateY(-0.25);
-  star_2.position.set(-1, -12, 6);
+  star_2.position.set(-1, -12, 1);
 
   scene.add(star_1, star_2);
   scene.add(star);
 });
-gltfLoader.load("/models/retro_pc_monitor.glb", (glb) => {
-  console.log("added");
-  const laptop = glb.scene;
-  const laptopGroup = new THREE.Group();
-  laptop.scale.set(6, 6, 1);
-  console.log(object);
-  //object.position.set(-2, 0, 0);
+// gltfLoader.load("/models/retro_pc_monitor.glb", (glb) => {
+//   console.log("added");
+//   const laptop = glb.scene;
+//   const laptopGroup = new THREE.Group();
+//   laptop.scale.set(6, 6, 1);
+//   console.log(object);
+//   //object.position.set(-2, 0, 0);
 
-  object.position.set(-2, -10.2, 0);
-  //laptopGroup.add(laptop, object);
-  laptop.position.set(1.06, -8.96, 6);
+//   //object.position.set(-2, -10.2, 0);
+//   //laptopGroup.add(laptop, object);
+//   laptop.position.set(1.04, -8.97, 6.1);
 
-  scene.add(object, laptop);
-});
+//   scene.add(object, laptop);
+// });
 
 //screen.position.set(0, -9.5, 1.1);
 
@@ -181,7 +199,7 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   100
 );
-camera.position.z = 10;
+camera.position.z = 6;
 scene.add(cameraGroup);
 cameraGroup.add(camera);
 
@@ -364,12 +382,12 @@ const tick = (t) => {
   // }
   camera.position.y = (-scrollY / sizes.height) * objectDistance;
 
-  // const parallaxX = cursor.x * 0.5;
-  // const parallaxY = -cursor.y * 0.5;
-  // cameraGroup.position.x +=
-  //   (parallaxX - cameraGroup.position.x) * 3 * deltaTime;
-  // cameraGroup.position.y +=
-  //   (parallaxY - cameraGroup.position.y) * 3 * deltaTime;
+  const parallaxX = cursor.x * 0.5;
+  const parallaxY = -cursor.y * 0.5;
+  cameraGroup.position.x +=
+    (parallaxX - cameraGroup.position.x) * 4 * deltaTime;
+  cameraGroup.position.y +=
+    (parallaxY - cameraGroup.position.y) * 4 * deltaTime;
 
   // Render
   renderer.render(scene, camera);
