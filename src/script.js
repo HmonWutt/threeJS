@@ -50,68 +50,128 @@ const sizes = {
 const renderer = new THREE.WebGLRenderer({
   canvas: canvas,
   alpha: true,
+  antialias: true,
 });
 renderer.setSize(sizes.width, sizes.height);
-const iframe = document.querySelector("iframe");
-iframe.src = "https://hmonwutt.github.io/frontend.io/";
 const iframeRenderer = new CSS2DRenderer();
+
+iframeRenderer.setSize(sizes.width, sizes.height);
+
+const parent = document.querySelector("#container");
+
+document.body.appendChild(iframeRenderer.domElement);
+var div = document.createElement("div");
+div.setAttribute("id", "iframe-container");
+
+var iframe = document.createElement("iframe");
+
+iframe.src = "https://hmonwutt.github.io/frontend.io/";
+div.appendChild(iframe);
+parent.appendChild(div);
+
+const buttonContainer = document.createElement("div");
+const linkContainer = document.createElement("div");
+div.appendChild(buttonContainer);
+div.appendChild(linkContainer);
+buttonContainer.setAttribute("class", "button-container");
+linkContainer.setAttribute("class", "button-container");
+buttonContainer.setAttribute("id", "button-container");
+linkContainer.setAttribute("id", "link-container");
+
+function makeButtonSpan(id, text) {
+  const span = document.createElement("span");
+  span.setAttribute("id", id);
+  const itext = document.createElement("i");
+  span.appendChild(itext);
+  itext.textContent = text;
+
+  return span;
+}
+function makeLinkSpan(id, link, text) {
+  const span = document.createElement("span");
+  span.setAttribute("id", id);
+
+  span.href = link;
+  const itext = document.createElement("a");
+  span.appendChild(itext);
+  itext.textContent = text;
+  span.addEventListener("click", () => {
+    window.open(link);
+  });
+
+  return span;
+}
+const buttonOne = makeButtonSpan("one", "1");
+const buttonTwo = makeButtonSpan("two", "2");
+const buttonThree = makeButtonSpan("three", "3");
+const linkOne = makeLinkSpan("linkone", "https://hmonsworld.link", "link 1");
+const linkTwo = makeLinkSpan("linktwo", "https://choretracker.se", "link 2");
+const linkThree = makeLinkSpan(
+  "linkthree",
+  "https://hmonwutt.github.io/frontend.io/",
+  "link 3"
+);
+
+buttonContainer.appendChild(buttonOne);
+
+buttonContainer.appendChild(buttonTwo);
+
+buttonContainer.appendChild(buttonThree);
+linkContainer.appendChild(linkOne);
+linkContainer.appendChild(linkTwo);
+linkContainer.appendChild(linkThree);
+
+var object = new CSS2DObject(div);
+scene.add(object);
+
+const frame = document.querySelector("iframe");
+
+frame.src = "https://hmonwutt.github.io/frontend.io/";
+
 const buttons = document.querySelectorAll("span");
 for (const button of buttons) {
   button.addEventListener("click", () => {
     const buttonID = button.getAttribute("id");
     switch (buttonID) {
       case "one":
-        iframe.src = "https://hmonsworld.link";
+        frame.src = "https://hmonsworld.link";
         break;
       case "two":
-        iframe.src = "https://choretracker.se";
+        frame.src = "https://choretracker.se";
         break;
       case "three":
-        iframe.src = "https://hmonwutt.github.io/frontend.io/";
+        frame.src = "https://hmonwutt.github.io/frontend.io/";
         break;
     }
   });
 }
-// iframeRenderer.setSize(sizes.width, sizes.height);
-// const parent = document.querySelector("#myprojects");
-// document.body.appendChild(iframeRenderer.domElement);
-// var div = document.createElement("div");
-// div.setAttribute("id", "iframe-container");
-// div.style.width = "55vw";
-// div.style.height = "70vh";
 
-// var iframe = document.createElement("iframe");
-
-// iframe.style.width = "29vw";
-// iframe.style.height = "50vh";
-// iframe.style.border = "0px";
-// iframe.src = "https://hmonwutt.github.io/frontend.io/";
-// div.appendChild(iframe);
-
-// var object = new CSS2DObject(div);
-
-// scene.add(object);
-
-let star, star_1, star_2;
+let star, star_1, star_2, star_3;
 
 const gltfLoader = new GLTFLoader();
 gltfLoader.load("/models/Keys.glb", (glb) => {
   star = glb.scene;
-  star.scale.set(0.2, 0.2, 0.2);
+  star.scale.set(0.3, 0.3, 0.3);
   star.position.set(0.5, -0.2, 1);
 
   star_1 = star.clone();
-  star.rotateX(1);
+  star.rotateX(1.23);
   star_1.position.set(-1, -4, 1);
-  star_1.rotateX(-4.8);
-  star_1.rotateZ(-0.5);
+  star_1.rotateX(1.2);
+  star_1.rotateY(0.3);
+  star_1.rotateZ(-0.3);
+  star_3 = star.clone();
+  star_3.scale.set(0.15, 0.15, 0.15);
+
+  star_3.position.set(-2.25, -8, 1);
+  star_3.rotateZ(-0.3);
 
   star_2 = star.clone();
-  star_2.scale.set(0.2, 0.2, 0.2);
+
   star_2.rotateY(-0.25);
   star_2.position.set(-1, -12, 1);
 
-  scene.add(star_1, star_2);
+  scene.add(star_1, star_2, star_3);
   scene.add(star);
 });
 // gltfLoader.load("/models/retro_pc_monitor.glb", (glb) => {
@@ -304,6 +364,9 @@ document.addEventListener("click", () => {
   if (star_2) {
     click(star_2, rayCaster);
   }
+  if (star_3) {
+    click(star_3, rayCaster);
+  }
 });
 let previousTime = 0;
 
@@ -392,6 +455,7 @@ const tick = (t) => {
   // Render
   renderer.render(scene, camera);
   iframeRenderer.render(scene, camera);
+  renderer.setPixelRatio(2);
 
   // Call tick again on the next frame
   window.requestAnimationFrame(tick);
