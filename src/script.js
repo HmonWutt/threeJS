@@ -45,7 +45,7 @@ const canvas = document.querySelector("canvas.webgl");
 export const scene = new THREE.Scene();
 const objectDistance = 4;
 const textureLoader = new THREE.TextureLoader();
-const gradientTexture = textureLoader.load("textures/gradients/3.jpg");
+const gradientTexture = textureLoader.load("./textures/gradients/3.jpg");
 gradientTexture.magFilter = THREE.NearestFilter;
 const material = new THREE.MeshToonMaterial({
   color: parameters.textColor,
@@ -161,7 +161,7 @@ for (const button of buttons) {
 let star, star_1, star_2, star_3;
 
 const gltfLoader = new GLTFLoader();
-gltfLoader.load("/models/Keys.glb", (glb) => {
+gltfLoader.load("./models/Keys.glb", (glb) => {
   star = glb.scene;
   star.scale.set(0.3, 0.3, 0.3);
   star.position.set(0.9, -0.2, 1);
@@ -231,7 +231,7 @@ class Letters {
       const textGeometry = new TextGeometry(this.letters, {
         font: font,
         size: this.size.size,
-        
+
         height: this.size.height,
         curveSegments: 12,
         bevelEnabled: true,
@@ -293,7 +293,7 @@ contactme.getText();
 //scene.add(text_1);
 //scene.add(one);
 let linkedin, github;
-gltfLoader.load("/models/linkedin.glb", (glb) => {
+gltfLoader.load("./models/linkedin.glb", (glb) => {
   linkedin = glb.scene;
 
   linkedin.scale.set(0.25, 0.25, 0.25);
@@ -302,7 +302,7 @@ gltfLoader.load("/models/linkedin.glb", (glb) => {
   linkedin.name = "linkedin";
   scene.add(linkedin); //
 });
-gltfLoader.load("/models/github_new.glb", (glb) => {
+gltfLoader.load("./models/github_new.glb", (glb) => {
   github = glb.scene;
 
   github.scale.set(0.25, 0.25, 0.25);
