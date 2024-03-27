@@ -1,13 +1,17 @@
 {
+  "homepage": "https://HmonWuttt.github.io/threeJS",
   "name": "threejs-journey-exercise",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build"
+    "build": "vite build",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
   },
   "devDependencies": {
+    "gh-pages": "^6.1.1",
     "vite": "^4.5.2"
   },
   "dependencies": {

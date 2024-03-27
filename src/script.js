@@ -227,10 +227,11 @@ class Letters {
     let text;
     const fontLoader = new FontLoader();
 
-    fontLoader.load("/fonts/helvetiker_regular.typeface.json", (font) => {
+    fontLoader.load("./fonts/helvetiker_regular.typeface.json", (font) => {
       const textGeometry = new TextGeometry(this.letters, {
         font: font,
         size: this.size.size,
+        
         height: this.size.height,
         curveSegments: 12,
         bevelEnabled: true,
