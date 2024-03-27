@@ -1,0 +1,11 @@
+Model Information:
+* title:	laptop funny
+* source:	https://sketchfab.com/3d-models/laptop-funny-9f9cdb928093439280dff79447a1a22b
+* author:	omegahusky (https://sketchfab.com/omegahusky)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "laptop funny" (https://sketchfab.com/3d-models/laptop-funny-9f9cdb928093439280dff79447a1a22b) by omegahusky (https://sketchfab.com/omegahusky) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
