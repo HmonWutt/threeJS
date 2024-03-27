@@ -10,24 +10,28 @@ import {
   CSS2DObject,
 } from "three/examples/jsm/renderers/CSS2DRenderer.js";
 
+import { openLink } from "./openLink";
+import { changeCursor } from "./cursorChange";
 /**
  * Debug
  */
 const gui = new GUI();
 
 const parameters = {
-  homeOriginalColor: "#f4ec0b",
-  skillsOriginalColor: "#e53cfb",
-  projectOriginalColor: "#6cd6f9",
-  contactOriginalColor: "#57ff76",
+  homeColor: "#f4ec0b",
+  skillsColor: "#e53cfb",
+  projectsColor: "#6cd6f9",
+  contactColor: "#57ff76",
   particleColor: "#ffeded",
+  textColor: "#ffffff",
 };
 
-gui.addColor(parameters, "homeOriginalColor");
-gui.addColor(parameters, "skillsOriginalColor");
-gui.addColor(parameters, "projectOriginalColor");
-gui.addColor(parameters, "contactOriginalColor");
+gui.addColor(parameters, "homeColor");
+gui.addColor(parameters, "skillsColor");
+gui.addColor(parameters, "projectsColor");
+gui.addColor(parameters, "contactColor");
 gui.addColor(parameters, "particleColor");
+gui.addColor(parameters, "textColor");
 
 const clock = new THREE.Clock();
 
@@ -38,7 +42,15 @@ const clock = new THREE.Clock();
 const canvas = document.querySelector("canvas.webgl");
 
 // Scene
-const scene = new THREE.Scene();
+export const scene = new THREE.Scene();
+const objectDistance = 4;
+const textureLoader = new THREE.TextureLoader();
+const gradientTexture = textureLoader.load("textures/gradients/3.jpg");
+gradientTexture.magFilter = THREE.NearestFilter;
+const material = new THREE.MeshToonMaterial({
+  color: parameters.textColor,
+  gradientMap: gradientTexture,
+});
 
 /**
  * Sizes
@@ -53,6 +65,7 @@ const renderer = new THREE.WebGLRenderer({
   antialias: true,
 });
 renderer.setSize(sizes.width, sizes.height);
+renderer.shadowMap.enabled = true;
 const iframeRenderer = new CSS2DRenderer();
 
 iframeRenderer.setSize(sizes.width, sizes.height);
@@ -120,7 +133,6 @@ buttonContainer.appendChild(buttonThree);
 linkContainer.appendChild(linkOne);
 linkContainer.appendChild(linkTwo);
 linkContainer.appendChild(linkThree);
-
 var object = new CSS2DObject(div);
 scene.add(object);
 
@@ -152,10 +164,11 @@ const gltfLoader = new GLTFLoader();
 gltfLoader.load("/models/Keys.glb", (glb) => {
   star = glb.scene;
   star.scale.set(0.3, 0.3, 0.3);
-  star.position.set(0.5, -0.2, 1);
+  star.position.set(0.9, -0.2, 1);
 
   star_1 = star.clone();
   star.rotateX(1.23);
+  star.rotateY(0.5);
   star_1.position.set(-1, -4, 1);
   star_1.rotateX(1.2);
   star_1.rotateY(0.3);
@@ -164,46 +177,143 @@ gltfLoader.load("/models/Keys.glb", (glb) => {
   star_3.scale.set(0.15, 0.15, 0.15);
 
   star_3.position.set(-2.25, -8, 1);
-  star_3.rotateZ(-0.3);
+  star_3.rotateZ(-0.15);
+  star_3.rotateX(0.1);
 
   star_2 = star.clone();
-
   star_2.rotateY(-0.25);
   star_2.position.set(-1, -12, 1);
 
   scene.add(star_1, star_2, star_3);
+  star.castShadow = true;
+  star_1.castShadow = true;
+  star_2.castShadow = true;
+  star_3.castShadow = true;
   scene.add(star);
 });
-// gltfLoader.load("/models/retro_pc_monitor.glb", (glb) => {
-//   console.log("added");
-//   const laptop = glb.scene;
-//   const laptopGroup = new THREE.Group();
-//   laptop.scale.set(6, 6, 1);
-//   console.log(object);
-//   //object.position.set(-2, 0, 0);
 
-//   //object.position.set(-2, -10.2, 0);
-//   //laptopGroup.add(laptop, object);
-//   laptop.position.set(1.04, -8.97, 6.1);
+//////text
+import { FontLoader } from "three/addons/loaders/FontLoader.js";
+import { TextGeometry } from "three/addons/geometries/TextGeometry.js";
+// import * as THREE from "three";
 
-//   scene.add(object, laptop);
-// });
+// import { scene } from "./script";
+const pointLight = new THREE.PointLight("#ffffff", 1, 100);
+pointLight.castShadow = true;
+pointLight.shadow.mapSize.width = 4100;
+pointLight.shadow.mapSize.height = 4100;
+pointLight.position.set(0, 0, 3.5);
+
+scene.add(pointLight);
+
+const geometry = new THREE.PlaneGeometry(10, 29);
+const phongMaterial = new THREE.MeshPhongMaterial({
+  color: "#ffffff",
+});
+const plane = new THREE.Mesh(geometry, phongMaterial);
+plane.position.set(0, 0, -1);
+
+plane.receiveShadow = true;
+scene.add(plane);
+
+class Letters {
+  constructor(material, position, letters, size) {
+    this.material = material;
+    this.position = position;
+    this.letters = letters;
+    this.size = size;
+  }
+  getText() {
+    let text;
+    const fontLoader = new FontLoader();
+
+    fontLoader.load("/fonts/helvetiker_regular.typeface.json", (font) => {
+      const textGeometry = new TextGeometry(this.letters, {
+        font: font,
+        size: this.size.size,
+        height: this.size.height,
+        curveSegments: 12,
+        bevelEnabled: true,
+        bevelThickness: 0.015,
+        bevelSize: 0.01,
+        bevelOffset: 0,
+        bevelSegments: 4,
+      });
+      // const textMaterial = new THREE.MeshBasicMaterial({ color: color });
+      textGeometry.computeBoundingBox();
+      textGeometry.translate(
+        -(textGeometry.boundingBox.max.x - 0.01) * 0.5,
+        -(textGeometry.boundingBox.max.y - 0.01) * 0.5,
+        -(textGeometry.boundingBox.max.z - 0.015) * 0.5
+      );
+      text = new THREE.Mesh(textGeometry, this.material);
+      text.castShadow = true;
+      text.position.set(this.position.x, this.position.y, this.position.z);
+      scene.add(text);
+    });
+  }
+}
+const size_1 = { size: 0.3, height: 0.1 };
+const size_2 = { size: 0.15, height: 0.05 };
+const size_3 = { size: 0.1, height: 0.03 };
+const position_1 = { x: -1.5, y: -0.5, z: 1 };
+const position_2 = { x: 1, y: -3, z: 1 };
+const position_3 = { x: 1, y: -3.5, z: 1 };
+const position_4 = { x: 1, y: -4, z: 1 };
+const position_5 = { x: 1, y: -4.5, z: 1 };
+const position_6 = { x: 1, y: -5, z: 1 };
+const position_7 = { x: 1, y: -11.5, z: 1 };
+const position_8 = { x: -2.3, y: -7.2, z: 1 };
+const letters_1 = "Hello,world!";
+const letters_2 = "Skills";
+const skill_1 = "Javascript";
+const skill_2 = "CSS";
+const skill_3 = "HTML";
+const skill_4 = "Python";
+const contact = "Get in touch!";
+//const projects = "Projects";
+const hello = new Letters(material, position_1, letters_1, size_1);
+const skills = new Letters(material, position_2, letters_2, size_1);
+const skillone = new Letters(material, position_3, skill_1, size_2);
+const skilltwo = new Letters(material, position_4, skill_2, size_2);
+const skillthree = new Letters(material, position_5, skill_3, size_2);
+const skillfour = new Letters(material, position_6, skill_4, size_2);
+const contactme = new Letters(material, position_7, contact, size_2);
+//const myprojects = new Letters(material, position_8, projects, size_3);
+hello.getText();
+skills.getText();
+skillone.getText();
+skilltwo.getText();
+skillthree.getText();
+skillfour.getText();
+contactme.getText();
+//myprojects.getText();
+
+//scene.add(text_1);
+//scene.add(one);
+let linkedin, github;
+gltfLoader.load("/models/linkedin.glb", (glb) => {
+  linkedin = glb.scene;
+
+  linkedin.scale.set(0.25, 0.25, 0.25);
+  linkedin.position.set(-1.5, -12, 0.5);
+  linkedin.rotateY(0.4);
+  linkedin.name = "linkedin";
+  scene.add(linkedin); //
+});
+gltfLoader.load("/models/github_new.glb", (glb) => {
+  github = glb.scene;
+
+  github.scale.set(0.25, 0.25, 0.25);
+  github.rotateY(0.4);
+  github.position.set(1.5, -12, 0.5);
+  github.name = "github";
+  scene.add(github); //
+});
 
 //screen.position.set(0, -9.5, 1.1);
 
-/**
- * Test cube
- *
- */
-
-const objectDistance = 4;
-const textureLoader = new THREE.TextureLoader();
-const gradientTexture = textureLoader.load("textures/gradients/3.jpg");
-gradientTexture.magFilter = THREE.NearestFilter;
-const material = new THREE.MeshToonMaterial({
-  gradientMap: gradientTexture,
-});
-const particlesCount = 300;
+const particlesCount = 500;
 const positions = new Float32Array(particlesCount * 3);
 
 for (let i = 0; i < particlesCount; i++) {
@@ -235,10 +345,10 @@ const mesh3 = new THREE.Mesh(
 mesh2.position.y = -objectDistance * 1;
 mesh3.position.y = -objectDistance * 2;
 
-mesh2.position.x = -2;
+//mesh2.position.x = -2;
 mesh3.position.x = 2;
 
-//scene.add(mesh2, mesh3);
+//scene.add(mesh3);
 
 /**   light */
 const light = new THREE.AmbientLight(0x404040); // soft white light
@@ -274,57 +384,57 @@ let scrollY;
 let currentSection = 0;
 
 window.addEventListener("scroll", () => {
-  star.rotation.y = 0.5;
   scrollY = window.scrollY;
   const newSection = Math.round(scrollY / sizes.height);
-  const meshes = [star.children[2], star.children[4], star.children[3]];
 
-  //   if (newSection != currentSection) {
-  //     if (newSection > 0 && currentSection < newSection) {
-  //       gsap.to(star.position, {
-  //         duration: 0.2,
-  //         ease: "power2.inOut",
-  //         y: `${star.position.y - 4}`,
-  //       });
+  if (newSection != currentSection) {
+    if (newSection > 0 && currentSection < newSection) {
+      gsap.to(pointLight.position, {
+        duration: 0.75,
+        ease: "power2.inOut",
+        y: `${pointLight.position.y - 4}`,
+      });
+      //goRound();
 
-  //       // star.position.y -= 4;
-  //       //keyDown(meshes[currentSection]);
-  //       const originalColor = { r: 204, g: 164, b: 9 };
-  //       const targetColor = { r: 255, g: 0, b: 0 };
-  //       //keyUp(meshes[currentSection], originalColor, targetColor);
-  //     } else if (newSection > 0 && currentSection > newSection) {
-  //       gsap.to(star.position, {
-  //         duration: 0.2,
-  //         ease: "power2.inOut",
-  //         y: `${star.position.y + 4}`,
-  //       });
-  //       //keyDown(meshes[newSection - 1]);
-  //       const originalColor = { r: 204, g: 164, b: 9 };
-  //       const targetColor = { r: 255, g: 0, b: 0 };
-  //       //keyUp(meshes[newSection - 1], originalColor, targetColor);
-  //     } else {
-  //       if (star) {
-  //         //keyDown(star.children[1]);
-  //         const referenceColor = star.children[1].children[0].material.color;
-  //         const object = star.children[1];
+      // star.position.y -= 4;
+      //keyDown(meshes[currentSection]);
+      const originalColor = { r: 204, g: 164, b: 9 };
+      const targetColor = { r: 255, g: 0, b: 0 };
+      //keyUp(meshes[currentSection], originalColor, targetColor);
+    } else if (newSection > 0 && currentSection > newSection) {
+      gsap.to(pointLight.position, {
+        duration: 0.75,
+        ease: "power2.inOut",
+        y: `${pointLight.position.y + 4}`,
+      });
+      //goRound();
 
-  //         // const ref = {
-  //         //   r: Math.round(originalColor.r * 255),
-  //         //   g: Math.round(originalColor.g * 255),
-  //         //   b: Math.round(originalColor.b * 255),
-  //         // };
-  //         const originalColor = { r: 204, g: 164, b: 9 };
-  //         const targetColor = { r: 255, g: 0, b: 0 };
-  //         //keyUp(star.children[1], originalColor, targetColor);
-  //         gsap.to(star.position, {
-  //           duration: 0.3,
-  //           ease: "power2.inOut",
-  //           y: "0",
-  //         });
-  //       }
-  //     }
-  //     currentSection = newSection;
-  //   }
+      //keyDown(meshes[newSection - 1]);
+      const originalColor = { r: 204, g: 164, b: 9 };
+      const targetColor = { r: 255, g: 0, b: 0 };
+      //keyUp(meshes[newSection - 1], originalColor, targetColor);
+    } else {
+      //keyDown(star.children[1]);
+      const referenceColor = star.children[1].children[0].material.color;
+      const object = star.children[1];
+
+      // const ref = {
+      //   r: Math.round(originalColor.r * 255),
+      //   g: Math.round(originalColor.g * 255),
+      //   b: Math.round(originalColor.b * 255),
+      // };
+      const originalColor = { r: 204, g: 164, b: 9 };
+      const targetColor = { r: 255, g: 0, b: 0 };
+      //keyUp(star.children[1], originalColor, targetColor);
+      gsap.to(pointLight.position, {
+        duration: 0.75,
+        ease: "power2.inOut",
+        y: "0",
+      });
+      //goRound();
+    }
+    currentSection = newSection;
+  }
 });
 
 const cursor = {};
@@ -367,12 +477,24 @@ document.addEventListener("click", () => {
   if (star_3) {
     click(star_3, rayCaster);
   }
+  if (linkedin) {
+    openLink(linkedin, rayCaster);
+  }
+  if (github) {
+    openLink(github, rayCaster);
+  }
 });
 let previousTime = 0;
 
 const tick = (t) => {
+  material.color.set(parameters.textColor);
   particles.material.color.set(parameters.particleColor);
-  //const sectionMeshes = [mesh2, mesh3];
+  const elapsedTime = clock.getElapsedTime();
+  const deltaTime = elapsedTime - previousTime;
+  previousTime = elapsedTime;
+
+  // github.rotation.y += Math.PI * 0.5;
+  mesh2.position.x += deltaTime;
 
   if (star) {
     for (const child of star.children) {
@@ -382,67 +504,48 @@ const tick = (t) => {
       switch (caseID) {
         case "Cube002":
           //`rgb(204, 164, 9)`;
-          child.children[0].material.color.set(
-            `${parameters.homeOriginalColor}`
-          );
+          child.children[0].material.color.set(parameters.homeColor);
           break;
         case "Cube003":
           //rgb(192, 25, 204)
-          child.children[0].material.color.set(
-            `${parameters.skillsOriginalColor}`
-          );
+          child.children[0].material.color.set(`${parameters.skillsColor}`);
           break;
         case "Cube004":
           //rgb(33, 204, 47)
-          child.children[0].material.color.set(
-            `${parameters.projectOriginalColor}`
-          );
+          child.children[0].material.color.set(`${parameters.projectsColor}`);
           break;
         case "Cube005":
           //rgb(15, 124, 204)
-          child.children[0].material.color.set(
-            `${parameters.contactOriginalColor}`
-          );
+          child.children[0].material.color.set(`${parameters.contactColor}`);
           break;
         default:
       }
     }
   }
   //////
-  let currentIntersect = null;
-  rayCaster.setFromCamera(mouse, camera);
-  if (star) {
-    const intersectAll = rayCaster.intersectObject(star);
-    if (intersectAll.length) {
-      if (!currentIntersect) {
-        document.body.style.cursor = "pointer";
-      }
-      currentIntersect = intersectAll;
-    } else {
-      currentIntersect = null;
-      document.body.style.cursor = "default";
-    }
+  if (github && linkedin && star && star_1 && star_2 && star_3) {
+    rayCaster.setFromCamera(mouse, camera);
+    const objects = new THREE.Group();
+    objects.add(github, linkedin, star, star_1, star_2, star_3);
+    scene.add(objects);
+    changeCursor(objects, rayCaster);
   }
-
   ///////
 
-  const elapsedTime = clock.getElapsedTime();
-  const deltaTime = elapsedTime - previousTime;
-  previousTime = elapsedTime;
-
-  // for (const mesh of sectionMeshes) {
-  //   mesh.rotation.x += deltaTime * 0.1;
-  //   mesh.rotation.y += deltaTime * 0.12;
-  // }
   window.addEventListener("mousemove", (e) => {
     mouse.x = (e.clientX / sizes.width) * 2 - 1;
     mouse.y = -(e.clientY / sizes.height) * 2 + 1;
   });
 
-  // if (star) {
-  //   star.children[2].rotation.z += deltaTime * 0.2;
-  //   //star.rotation.y += deltaTime * 0.1;
-  // }
+  if (github) {
+    //star.children[2].rotation.z += deltaTime * 0.2;
+    github.position.x = 1.5 + Math.sin(elapsedTime) * 0.1;
+  }
+  if (linkedin) {
+    //star.children[2].rotation.z += deltaTime * 0.2;
+    linkedin.position.x = 0.8 + Math.sin(elapsedTime) * 0.1;
+  }
+
   camera.position.y = (-scrollY / sizes.height) * objectDistance;
 
   const parallaxX = cursor.x * 0.5;
@@ -453,9 +556,11 @@ const tick = (t) => {
     (parallaxY - cameraGroup.position.y) * 4 * deltaTime;
 
   // Render
+
   renderer.render(scene, camera);
+
   iframeRenderer.render(scene, camera);
-  renderer.setPixelRatio(2);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
   // Call tick again on the next frame
   window.requestAnimationFrame(tick);
