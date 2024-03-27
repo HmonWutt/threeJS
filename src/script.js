@@ -126,9 +126,7 @@ const linkThree = makeLinkSpan(
 );
 
 buttonContainer.appendChild(buttonOne);
-
 buttonContainer.appendChild(buttonTwo);
-
 buttonContainer.appendChild(buttonThree);
 linkContainer.appendChild(linkOne);
 linkContainer.appendChild(linkTwo);
@@ -185,10 +183,7 @@ gltfLoader.load("./models/Keys.glb", (glb) => {
   star_2.position.set(-1, -12, 1);
 
   scene.add(star_1, star_2, star_3);
-  star.castShadow = true;
-  star_1.castShadow = true;
-  star_2.castShadow = true;
-  star_3.castShadow = true;
+
   scene.add(star);
 });
 
@@ -206,7 +201,7 @@ pointLight.position.set(0, 0, 3.5);
 
 scene.add(pointLight);
 
-const geometry = new THREE.PlaneGeometry(10, 29);
+const geometry = new THREE.PlaneGeometry(12, 29);
 const phongMaterial = new THREE.MeshPhongMaterial({
   color: "#ffffff",
 });
@@ -373,6 +368,7 @@ const camera = new THREE.PerspectiveCamera(
 camera.position.z = 6;
 scene.add(cameraGroup);
 cameraGroup.add(camera);
+scene.fog = new THREE.Fog(0xa0a0a0, 1, 100);
 
 /**
  * Renderer
@@ -565,7 +561,7 @@ const tick = (t) => {
 
   // Call tick again on the next frame
   window.requestAnimationFrame(tick);
-  TWEEN.update(t);
+  //TWEEN.update(t);
 };
 
 tick();
