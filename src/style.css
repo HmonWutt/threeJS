@@ -177,6 +177,7 @@ span:active {
 #link-container {
   top: 80vh;
   left: 50%;
+  padding-top: 1em;
 }
 #credit {
   position: absolute;

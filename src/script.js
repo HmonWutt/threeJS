@@ -12,6 +12,8 @@ import {
 
 import { openLink } from "./openLink";
 import { changeCursor } from "./cursorChange";
+import { FontLoader } from "three/addons/loaders/FontLoader.js";
+import { TextGeometry } from "three/addons/geometries/TextGeometry.js";
 /**
  * Debug
  */
@@ -174,7 +176,7 @@ gltfLoader.load("./models/Keys.glb", (glb) => {
   star_3 = star.clone();
   star_3.scale.set(0.15, 0.15, 0.15);
 
-  star_3.position.set(-2.25, -8, 1);
+  star_3.position.set(-3, -8, 1);
   star_3.rotateZ(-0.15);
   star_3.rotateX(0.1);
 
@@ -182,27 +184,21 @@ gltfLoader.load("./models/Keys.glb", (glb) => {
   star_2.rotateY(-0.25);
   star_2.position.set(-1, -12, 1);
 
-  scene.add(star_1, star_2, star_3);
-
-  scene.add(star);
+  scene.add(star, star_1, star_2, star_3);
 });
 
 //////text
-import { FontLoader } from "three/addons/loaders/FontLoader.js";
-import { TextGeometry } from "three/addons/geometries/TextGeometry.js";
-// import * as THREE from "three";
 
-// import { scene } from "./script";
 const pointLight = new THREE.PointLight("#ffffff", 1, 100);
 pointLight.castShadow = true;
-pointLight.shadow.mapSize.width = 4100;
-pointLight.shadow.mapSize.height = 4100;
+pointLight.shadow.mapSize.width = 1500;
+pointLight.shadow.mapSize.height = 1500;
 pointLight.position.set(0, 0, 3.5);
 
 scene.add(pointLight);
 
 const geometry = new THREE.PlaneGeometry(12, 29);
-const phongMaterial = new THREE.MeshPhongMaterial({
+const phongMaterial = new THREE.MeshStandardMaterial({
   color: "#ffffff",
 });
 const plane = new THREE.Mesh(geometry, phongMaterial);
@@ -235,7 +231,7 @@ class Letters {
         bevelOffset: 0,
         bevelSegments: 4,
       });
-      // const textMaterial = new THREE.MeshBasicMaterial({ color: color });
+
       textGeometry.computeBoundingBox();
       textGeometry.translate(
         -(textGeometry.boundingBox.max.x - 0.01) * 0.5,
@@ -267,7 +263,7 @@ const skill_2 = "CSS";
 const skill_3 = "HTML";
 const skill_4 = "Python";
 const contact = "Get in touch!";
-//const projects = "Projects";
+
 const hello = new Letters(material, position_1, letters_1, size_1);
 const skills = new Letters(material, position_2, letters_2, size_1);
 const skillone = new Letters(material, position_3, skill_1, size_2);
@@ -275,7 +271,7 @@ const skilltwo = new Letters(material, position_4, skill_2, size_2);
 const skillthree = new Letters(material, position_5, skill_3, size_2);
 const skillfour = new Letters(material, position_6, skill_4, size_2);
 const contactme = new Letters(material, position_7, contact, size_2);
-//const myprojects = new Letters(material, position_8, projects, size_3);
+
 hello.getText();
 skills.getText();
 skillone.getText();
@@ -283,10 +279,7 @@ skilltwo.getText();
 skillthree.getText();
 skillfour.getText();
 contactme.getText();
-//myprojects.getText();
 
-//scene.add(text_1);
-//scene.add(one);
 let linkedin, github;
 gltfLoader.load("./models/linkedin.glb", (glb) => {
   linkedin = glb.scene;
@@ -306,8 +299,6 @@ gltfLoader.load("./models/github_new.glb", (glb) => {
   github.name = "github";
   scene.add(github); //
 });
-
-//screen.position.set(0, -9.5, 1.1);
 
 const particlesCount = 500;
 const positions = new Float32Array(particlesCount * 3);
@@ -329,22 +320,6 @@ const particlesMaterial = new THREE.PointsMaterial({
 });
 const particles = new THREE.Points(particlesGeometry, particlesMaterial);
 scene.add(particles);
-//const mesh1 = new THREE.Mesh(new THREE.TorusGeometry(1, 0.4, 16, 60), material);
-
-const mesh2 = new THREE.Mesh(new THREE.ConeGeometry(1, 2, 32), material);
-
-const mesh3 = new THREE.Mesh(
-  new THREE.TorusKnotGeometry(0.8, 0.35, 100, 16),
-  material
-);
-
-mesh2.position.y = -objectDistance * 1;
-mesh3.position.y = -objectDistance * 2;
-
-//mesh2.position.x = -2;
-mesh3.position.x = 2;
-
-//scene.add(mesh3);
 
 /**   light */
 const light = new THREE.AmbientLight(0x404040); // soft white light
@@ -385,16 +360,16 @@ window.addEventListener("scroll", () => {
   const newSection = Math.round(scrollY / sizes.height);
 
   if (newSection != currentSection) {
+    if (newSection > 0 && newSection == 0) {
+      // scene.add(star);
+    }
     if (newSection > 0 && currentSection < newSection) {
       gsap.to(pointLight.position, {
         duration: 0.75,
         ease: "power2.inOut",
         y: `${pointLight.position.y - 4}`,
       });
-      //goRound();
 
-      // star.position.y -= 4;
-      //keyDown(meshes[currentSection]);
       const originalColor = { r: 204, g: 164, b: 9 };
       const targetColor = { r: 255, g: 0, b: 0 };
       //keyUp(meshes[currentSection], originalColor, targetColor);
@@ -404,14 +379,10 @@ window.addEventListener("scroll", () => {
         ease: "power2.inOut",
         y: `${pointLight.position.y + 4}`,
       });
-      //goRound();
 
-      //keyDown(meshes[newSection - 1]);
       const originalColor = { r: 204, g: 164, b: 9 };
       const targetColor = { r: 255, g: 0, b: 0 };
-      //keyUp(meshes[newSection - 1], originalColor, targetColor);
     } else {
-      //keyDown(star.children[1]);
       const referenceColor = star.children[1].children[0].material.color;
       const object = star.children[1];
 
@@ -420,15 +391,14 @@ window.addEventListener("scroll", () => {
       //   g: Math.round(originalColor.g * 255),
       //   b: Math.round(originalColor.b * 255),
       // };
-      const originalColor = { r: 204, g: 164, b: 9 };
-      const targetColor = { r: 255, g: 0, b: 0 };
-      //keyUp(star.children[1], originalColor, targetColor);
+      // const originalColor = { r: 204, g: 164, b: 9 };
+      // const targetColor = { r: 255, g: 0, b: 0 };
+
       gsap.to(pointLight.position, {
         duration: 0.75,
         ease: "power2.inOut",
         y: "0",
       });
-      //goRound();
     }
     currentSection = newSection;
   }
@@ -491,7 +461,6 @@ const tick = (t) => {
   previousTime = elapsedTime;
 
   // github.rotation.y += Math.PI * 0.5;
-  mesh2.position.x += deltaTime;
 
   if (star) {
     for (const child of star.children) {
@@ -519,11 +488,11 @@ const tick = (t) => {
       }
     }
   }
-  //////
+  ////
   if (github && linkedin && star && star_1 && star_2 && star_3) {
     rayCaster.setFromCamera(mouse, camera);
     const objects = new THREE.Group();
-    objects.add(github, linkedin, star, star_1, star_2, star_3);
+    objects.add(github, linkedin, star, star_1, star_2); // star_3);
     scene.add(objects);
     changeCursor(objects, rayCaster);
   }
@@ -535,11 +504,9 @@ const tick = (t) => {
   });
 
   if (github) {
-    //star.children[2].rotation.z += deltaTime * 0.2;
     github.position.x = 1.5 + Math.sin(elapsedTime) * 0.1;
   }
   if (linkedin) {
-    //star.children[2].rotation.z += deltaTime * 0.2;
     linkedin.position.x = 0.8 + Math.sin(elapsedTime) * 0.1;
   }
 
