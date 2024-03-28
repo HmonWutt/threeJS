@@ -170,9 +170,11 @@ span:active {
 
   transform: translate(-50%, 0%);
 }
+
 #button-container {
   top: 65vh;
   left: 50%;
+  margin-top: 1.5em;
 }
 #link-container {
   top: 80vh;
