@@ -233,7 +233,7 @@ iframe:hover {
     font-size: 0.4rem;
   }
 }
-@media only screen and (max-height: 700px) {
+@media only screen and (max-height: 600px) {
   span {
     font-size: 0.6rem;
   }
