@@ -176,7 +176,6 @@ gltfLoader.load("./models/Keys.glb", (glb) => {
   star_3 = star.clone();
   star_3.scale.set(0.15, 0.15, 0.15);
 
-  star_3.position.set(-3, -8, 1);
   star_3.rotateZ(-0.15);
   star_3.rotateX(0.1);
 
@@ -422,6 +421,7 @@ window.addEventListener("resize", () => {
 
   // Update camera
   camera.aspect = sizes.width / sizes.height;
+
   camera.updateProjectionMatrix();
 
   // Update renderer
@@ -451,9 +451,35 @@ document.addEventListener("click", () => {
     openLink(github, rayCaster);
   }
 });
-let previousTime = 0;
 
+// if (
+//   navigator.userAgent.includes(
+//     "Android" ||
+//       "webOS" ||
+//       "iPhone" ||
+//       "iPad" ||
+//       "iPod" ||
+//       "BlackBerry" ||
+//       "IEMobile" ||
+//       "Opera Mini"
+//   )
+// ) {
+//   // true for mobile device
+//   document.write("mobile device");
+// } else {
+//   // false for not mobile device
+//   document.write("not mobile device");
+// }
+let previousTime = 0;
 const tick = (t) => {
+  if (star_3) {
+    if (sizes.height < "600px" || sizes.width < "600px") {
+      star_3.position.set(-1, -8, 1);
+    }
+
+    star_3.position.set(-2.5, -8, 1);
+  }
+
   material.color.set(parameters.textColor);
   particles.material.color.set(parameters.particleColor);
   const elapsedTime = clock.getElapsedTime();
@@ -512,15 +538,17 @@ const tick = (t) => {
 
   camera.position.y = (-scrollY / sizes.height) * objectDistance;
 
+  if (sizes.width < sizes.height) {
+    cameraGroup.position.x += 0;
+    cameraGroup.position.y += 0;
+  }
+
   const parallaxX = cursor.x * 0.5;
   const parallaxY = -cursor.y * 0.5;
   cameraGroup.position.x +=
     (parallaxX - cameraGroup.position.x) * 4 * deltaTime;
   cameraGroup.position.y +=
     (parallaxY - cameraGroup.position.y) * 4 * deltaTime;
-
-  // Render
-
   renderer.render(scene, camera);
 
   iframeRenderer.render(scene, camera);
