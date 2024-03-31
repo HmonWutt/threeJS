@@ -190,6 +190,9 @@ span:active {
   padding-left: 5em;
   text-transform: none;
 }
+li {
+  font-size: 1rem;
+}
 
 /* iframe {
   min-height: 80vh;
