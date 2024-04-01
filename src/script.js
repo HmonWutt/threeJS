@@ -2,9 +2,10 @@ import * as THREE from "three";
 import GUI from "lil-gui";
 import gsap from "gsap";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import * as TWEEN from "@tweenjs/tween.js";
+//import * as TWEEN from "@tweenjs/tween.js";
 import { hover } from "./starHover";
 import { click } from "./starClick";
+import { scrollTo } from "./scrollTo";
 import {
   CSS2DRenderer,
   CSS2DObject,
@@ -14,10 +15,14 @@ import { openLink } from "./openLink";
 import { changeCursor } from "./cursorChange";
 import { FontLoader } from "three/addons/loaders/FontLoader.js";
 import { TextGeometry } from "three/addons/geometries/TextGeometry.js";
+
+//////
 /**
  * Debug
  */
+
 const gui = new GUI();
+gui.close();
 
 const parameters = {
   homeColor: "#f4ec0b",
@@ -25,7 +30,7 @@ const parameters = {
   projectsColor: "#6cd6f9",
   contactColor: "#57ff76",
   particleColor: "#ffeded",
-  textColor: "#ffffff",
+  textColor: "#2dd2fb",
 };
 
 gui.addColor(parameters, "homeColor");
@@ -44,11 +49,28 @@ const clock = new THREE.Clock();
 const canvas = document.querySelector("canvas.webgl");
 
 // Scene
-export const scene = new THREE.Scene();
+const scene = new THREE.Scene();
 const objectDistance = 4;
+////////loading manager/////
+//const loadingManager = new THREE.LoadingManager();
+
+// loadingManager.onStart = function (url, itemsLoaded, itemsTotal) {
+//   console.log(
+//     "Started loading file: " +
+//       url +
+//       ".\nLoaded " +
+//       itemsLoaded +
+//       " of " +
+//       itemsTotal +
+//       " files."
+//   );
+// };
+
 const textureLoader = new THREE.TextureLoader();
 const gradientTexture = textureLoader.load("./textures/gradients/3.jpg");
+
 gradientTexture.magFilter = THREE.NearestFilter;
+
 const material = new THREE.MeshToonMaterial({
   color: parameters.textColor,
   gradientMap: gradientTexture,
@@ -72,9 +94,9 @@ const iframeRenderer = new CSS2DRenderer();
 
 iframeRenderer.setSize(sizes.width, sizes.height);
 
-const parent = document.querySelector("#container");
+const parent = document.querySelector("#myprojects");
 
-document.body.appendChild(iframeRenderer.domElement);
+parent.appendChild(iframeRenderer.domElement);
 var div = document.createElement("div");
 div.setAttribute("id", "iframe-container");
 
@@ -98,7 +120,7 @@ function makeButtonSpan(id, text) {
   span.setAttribute("id", id);
   const itext = document.createElement("i");
   span.appendChild(itext);
-  itext.textContent = text;
+  itext.innerHTML = text;
 
   return span;
 }
@@ -116,9 +138,31 @@ function makeLinkSpan(id, link, text) {
 
   return span;
 }
+function makeSectionSpan(id, text) {
+  const span = document.createElement("span");
+  span.setAttribute("id", id);
+  const itext = document.createElement("i");
+  span.appendChild(itext);
+  itext.setAttribute("class", text);
+
+  return span;
+}
+
 const buttonOne = makeButtonSpan("one", "1");
 const buttonTwo = makeButtonSpan("two", "2");
 const buttonThree = makeButtonSpan("three", "3");
+const homeButton = makeSectionSpan("home", "fa fa-home");
+homeButton.addEventListener("click", () => {
+  setTimeout(() => scrollTo(0), 500);
+});
+const skillButton = makeSectionSpan("skills", "fas fa-graduation-cap");
+skillButton.addEventListener("click", () => {
+  setTimeout(() => scrollTo(1), 500);
+});
+const contactButton = makeSectionSpan("contact", "fas fa-envelope");
+contactButton.addEventListener("click", () => {
+  setTimeout(() => scrollTo(3), 500);
+});
 const linkOne = makeLinkSpan("linkone", "https://hmonsworld.link", "link 1");
 const linkTwo = makeLinkSpan("linktwo", "https://choretracker.se", "link 2");
 const linkThree = makeLinkSpan(
@@ -130,9 +174,12 @@ const linkThree = makeLinkSpan(
 buttonContainer.appendChild(buttonOne);
 buttonContainer.appendChild(buttonTwo);
 buttonContainer.appendChild(buttonThree);
-linkContainer.appendChild(linkOne);
-linkContainer.appendChild(linkTwo);
-linkContainer.appendChild(linkThree);
+buttonContainer.appendChild(linkOne);
+buttonContainer.appendChild(linkTwo);
+buttonContainer.appendChild(linkThree);
+linkContainer.appendChild(homeButton);
+linkContainer.appendChild(skillButton);
+linkContainer.appendChild(contactButton);
 var object = new CSS2DObject(div);
 scene.add(object);
 
@@ -173,17 +220,12 @@ gltfLoader.load("./models/Keys.glb", (glb) => {
   star_1.rotateX(1.2);
   star_1.rotateY(0.3);
   star_1.rotateZ(-0.3);
-  star_3 = star.clone();
-  star_3.scale.set(0.15, 0.15, 0.15);
-
-  star_3.rotateZ(-0.15);
-  star_3.rotateX(0.1);
 
   star_2 = star.clone();
   star_2.rotateY(-0.25);
   star_2.position.set(-1, -12, 1);
 
-  scene.add(star, star_1, star_2, star_3);
+  scene.add(star, star_1, star_2);
 });
 
 //////text
@@ -342,7 +384,6 @@ const camera = new THREE.PerspectiveCamera(
 camera.position.z = 6;
 scene.add(cameraGroup);
 cameraGroup.add(camera);
-scene.fog = new THREE.Fog(0xa0a0a0, 1, 100);
 
 /**
  * Renderer
@@ -421,7 +462,6 @@ window.addEventListener("resize", () => {
 
   // Update camera
   camera.aspect = sizes.width / sizes.height;
-
   camera.updateProjectionMatrix();
 
   // Update renderer
@@ -441,9 +481,7 @@ document.addEventListener("click", () => {
   if (star_2) {
     click(star_2, rayCaster);
   }
-  if (star_3) {
-    click(star_3, rayCaster);
-  }
+
   if (linkedin) {
     openLink(linkedin, rayCaster);
   }
@@ -470,16 +508,9 @@ document.addEventListener("click", () => {
 //   // false for not mobile device
 //   document.write("not mobile device");
 // }
+
 let previousTime = 0;
-const tick = (t) => {
-  if (star_3) {
-    if (sizes.height < "600px" || sizes.width < "600px") {
-      star_3.position.set(-1, -8, 1);
-    }
-
-    star_3.position.set(-2.5, -8, 1);
-  }
-
+const tick = () => {
   material.color.set(parameters.textColor);
   particles.material.color.set(parameters.particleColor);
   const elapsedTime = clock.getElapsedTime();
@@ -488,6 +519,15 @@ const tick = (t) => {
 
   // github.rotation.y += Math.PI * 0.5;
 
+  ////
+  if (github && linkedin && star && star_1 && star_2) {
+    rayCaster.setFromCamera(mouse, camera);
+    const objects = new THREE.Group();
+    objects.add(github, linkedin, star, star_1, star_2); // star_3);
+    scene.add(objects);
+    changeCursor(objects, rayCaster);
+  }
+  ///////
   if (star) {
     for (const child of star.children) {
       //const originalColor = { r: 204, g: 164, b: 9 };
@@ -514,15 +554,6 @@ const tick = (t) => {
       }
     }
   }
-  ////
-  if (github && linkedin && star && star_1 && star_2 && star_3) {
-    rayCaster.setFromCamera(mouse, camera);
-    const objects = new THREE.Group();
-    objects.add(github, linkedin, star, star_1, star_2); // star_3);
-    scene.add(objects);
-    changeCursor(objects, rayCaster);
-  }
-  ///////
 
   window.addEventListener("mousemove", (e) => {
     mouse.x = (e.clientX / sizes.width) * 2 - 1;
@@ -538,17 +569,13 @@ const tick = (t) => {
 
   camera.position.y = (-scrollY / sizes.height) * objectDistance;
 
-  if (sizes.width < sizes.height) {
-    cameraGroup.position.x += 0;
-    cameraGroup.position.y += 0;
-  }
-
   const parallaxX = cursor.x * 0.5;
   const parallaxY = -cursor.y * 0.5;
   cameraGroup.position.x +=
     (parallaxX - cameraGroup.position.x) * 4 * deltaTime;
   cameraGroup.position.y +=
     (parallaxY - cameraGroup.position.y) * 4 * deltaTime;
+
   renderer.render(scene, camera);
 
   iframeRenderer.render(scene, camera);

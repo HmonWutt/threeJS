@@ -8,10 +8,13 @@
 
 html {
   background: #302d31;
+  /* background: #c8a2c8; */
+  /* background: #d3e8d3; */
 }
 body {
   overflow-x: hidden;
-  position: relative;
+  /* position: relative; */
+  height: 100%;
 }
 h1,
 h2,
@@ -81,9 +84,10 @@ section:nth-child(odd) {
   border: 5mm ridge rgba(210, 204, 192, 0.9);
   border-radius: 10px;
   width: 50vw;
-  height: 70vh;
+  height: 60vh;
   line-height: 0px;
   position: absolute;
+  top: 400vh;
 }
 /* #container::before {
   content: url("/models/retro_comp_2.png");
@@ -93,7 +97,6 @@ section:nth-child(odd) {
   z-index: 0;
 } */
 iframe {
-  z-index: 2;
   border: 0;
   width: 100%;
   height: 100%;
@@ -149,6 +152,12 @@ span a {
   left: 20%;
   top: 45%;
 }
+#home i,
+#skills i,
+#contact i {
+  left: 33%;
+  top: 30%;
+}
 
 span:hover {
   text-decoration: none;
@@ -162,32 +171,29 @@ span:active {
 }
 
 .button-container {
-  margin-top: 1.5em;
   display: flex;
   gap: 0.5em;
   justify-content: center;
   position: absolute;
-
   transform: translate(-50%, 0%);
 }
 
 #button-container {
-  top: 65vh;
+  top: 60vh;
   left: 50%;
-  margin-top: 1.5em;
 }
 #link-container {
-  top: 80vh;
+  top: 76vh;
   left: 50%;
 }
 #credit {
   position: absolute;
-  bottom: 60vh;
+  top: 380vh;
   display: flex;
   justify-items: center;
   font-size: 1rem;
   width: 100vw;
-  padding-left: 5em;
+  padding-left: 35em;
   text-transform: none;
 }
 li {
