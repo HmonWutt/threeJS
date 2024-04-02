@@ -3,8 +3,8 @@ import GUI from "lil-gui";
 import gsap from "gsap";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 //import * as TWEEN from "@tweenjs/tween.js";
-import { hover } from "./starHover";
-import { click } from "./starClick";
+import { hover } from "./keyboardHover";
+import { click } from "./keyboardClick";
 import { scrollTo } from "./scrollTo";
 import {
   CSS2DRenderer,
@@ -54,9 +54,9 @@ const objectDistance = 4;
 ////////loading manager/////
 //const loadingManager = new THREE.LoadingManager();
 
-// loadingManager.onStart = function (url, itemsLoaded, itemsTotal) {
+// loadingManager.onkeyboardt = function (url, itemsLoaded, itemsTotal) {
 //   console.log(
-//     "Started loading file: " +
+//     "keyboardted loading file: " +
 //       url +
 //       ".\nLoaded " +
 //       itemsLoaded +
@@ -97,12 +97,10 @@ iframeRenderer.setSize(sizes.width, sizes.height);
 const parent = document.querySelector("#myprojects");
 
 parent.appendChild(iframeRenderer.domElement);
-var div = document.createElement("div");
+const div = document.createElement("div");
 div.setAttribute("id", "iframe-container");
 
-var iframe = document.createElement("iframe");
-
-iframe.src = "https://hmonwutt.github.io/frontend.io/";
+const iframe = document.createElement("iframe");
 div.appendChild(iframe);
 parent.appendChild(div);
 
@@ -121,7 +119,6 @@ function makeButtonSpan(id, text) {
   const itext = document.createElement("i");
   span.appendChild(itext);
   itext.innerHTML = text;
-
   return span;
 }
 function makeLinkSpan(id, link, text) {
@@ -135,7 +132,6 @@ function makeLinkSpan(id, link, text) {
   span.addEventListener("click", () => {
     window.open(link);
   });
-
   return span;
 }
 function makeSectionSpan(id, text) {
@@ -144,7 +140,6 @@ function makeSectionSpan(id, text) {
   const itext = document.createElement("i");
   span.appendChild(itext);
   itext.setAttribute("class", text);
-
   return span;
 }
 
@@ -180,12 +175,10 @@ buttonContainer.appendChild(linkThree);
 linkContainer.appendChild(homeButton);
 linkContainer.appendChild(skillButton);
 linkContainer.appendChild(contactButton);
-var object = new CSS2DObject(div);
-scene.add(object);
+const iframeObject = new CSS2DObject(div);
+scene.add(iframeObject);
 
-const frame = document.querySelector("iframe");
-
-frame.src = "https://hmonwutt.github.io/frontend.io/";
+iframe.src = "https://hmonwutt.github.io/frontend.io/";
 
 const buttons = document.querySelectorAll("span");
 for (const button of buttons) {
@@ -193,42 +186,42 @@ for (const button of buttons) {
     const buttonID = button.getAttribute("id");
     switch (buttonID) {
       case "one":
-        frame.src = "https://hmonsworld.link";
+        iframe.src = "https://hmonsworld.link";
         break;
       case "two":
-        frame.src = "https://choretracker.se";
+        iframe.src = "https://choretracker.se";
         break;
       case "three":
-        frame.src = "https://hmonwutt.github.io/frontend.io/";
+        iframe.src = "https://hmonwutt.github.io/frontend.io/";
         break;
     }
   });
 }
 
-let star, star_1, star_2, star_3;
+let keyboard, keyboard_1, keyboard_2;
 
 const gltfLoader = new GLTFLoader();
 gltfLoader.load("./models/Keys.glb", (glb) => {
-  star = glb.scene;
-  star.scale.set(0.3, 0.3, 0.3);
-  star.position.set(0.9, -0.2, 1);
+  keyboard = glb.scene;
+  keyboard.scale.set(0.3, 0.3, 0.3);
+  keyboard.position.set(0.9, -0.2, 1);
 
-  star_1 = star.clone();
-  star.rotateX(1.23);
-  star.rotateY(0.5);
-  star_1.position.set(-1, -4, 1);
-  star_1.rotateX(1.2);
-  star_1.rotateY(0.3);
-  star_1.rotateZ(-0.3);
+  keyboard_1 = keyboard.clone();
+  keyboard.rotateX(1.23);
+  keyboard.rotateY(0.5);
+  keyboard_1.position.set(-1, -4, 1);
+  keyboard_1.rotateX(1.2);
+  keyboard_1.rotateY(0.3);
+  keyboard_1.rotateZ(-0.3);
 
-  star_2 = star.clone();
-  star_2.rotateY(-0.25);
-  star_2.position.set(-1, -12, 1);
+  keyboard_2 = keyboard.clone();
+  keyboard_2.rotateY(-0.25);
+  keyboard_2.position.set(-1, -12, 1);
 
-  scene.add(star, star_1, star_2);
+  scene.add(keyboard, keyboard_1, keyboard_2);
 });
 
-//////text
+//////////////////////////////////////  text and shadow  ///////////////////////////////////////////
 
 const pointLight = new THREE.PointLight("#ffffff", 1, 100);
 pointLight.castShadow = true;
@@ -249,14 +242,15 @@ plane.receiveShadow = true;
 scene.add(plane);
 
 class Letters {
-  constructor(material, position, letters, size) {
+  constructor(position, letters, size) {
     this.material = material;
     this.position = position;
     this.letters = letters;
     this.size = size;
+    this.text;
   }
+
   getText() {
-    let text;
     const fontLoader = new FontLoader();
 
     fontLoader.load("./fonts/helvetiker_regular.typeface.json", (font) => {
@@ -279,16 +273,16 @@ class Letters {
         -(textGeometry.boundingBox.max.y - 0.01) * 0.5,
         -(textGeometry.boundingBox.max.z - 0.015) * 0.5
       );
-      text = new THREE.Mesh(textGeometry, this.material);
-      text.castShadow = true;
-      text.position.set(this.position.x, this.position.y, this.position.z);
-      scene.add(text);
+      this.text = new THREE.Mesh(textGeometry, this.material);
+      this.text.castShadow = true;
+      this.text.position.set(this.position.x, this.position.y, this.position.z);
+      scene.add(this.text);
     });
   }
 }
 const size_1 = { size: 0.3, height: 0.1 };
 const size_2 = { size: 0.15, height: 0.05 };
-const size_3 = { size: 0.1, height: 0.03 };
+
 const position_1 = { x: -1.5, y: -0.5, z: 1 };
 const position_2 = { x: 1, y: -3, z: 1 };
 const position_3 = { x: 1, y: -3.5, z: 1 };
@@ -296,7 +290,7 @@ const position_4 = { x: 1, y: -4, z: 1 };
 const position_5 = { x: 1, y: -4.5, z: 1 };
 const position_6 = { x: 1, y: -5, z: 1 };
 const position_7 = { x: 1, y: -11.5, z: 1 };
-const position_8 = { x: -2.3, y: -7.2, z: 1 };
+
 const letters_1 = "Hello,world!";
 const letters_2 = "Skills";
 const skill_1 = "Javascript";
@@ -305,13 +299,13 @@ const skill_3 = "HTML";
 const skill_4 = "Python";
 const contact = "Get in touch!";
 
-const hello = new Letters(material, position_1, letters_1, size_1);
-const skills = new Letters(material, position_2, letters_2, size_1);
-const skillone = new Letters(material, position_3, skill_1, size_2);
-const skilltwo = new Letters(material, position_4, skill_2, size_2);
-const skillthree = new Letters(material, position_5, skill_3, size_2);
-const skillfour = new Letters(material, position_6, skill_4, size_2);
-const contactme = new Letters(material, position_7, contact, size_2);
+const hello = new Letters(position_1, letters_1, size_1);
+const skills = new Letters(position_2, letters_2, size_1);
+const skillone = new Letters(position_3, skill_1, size_2);
+const skilltwo = new Letters(position_4, skill_2, size_2);
+const skillthree = new Letters(position_5, skill_3, size_2);
+const skillfour = new Letters(position_6, skill_4, size_2);
+const contactme = new Letters(position_7, contact, size_2);
 
 hello.getText();
 skills.getText();
@@ -373,6 +367,7 @@ scene.add(directionalLight);
  * Camera
  */
 // Base camera
+
 const cameraGroup = new THREE.Group();
 
 const camera = new THREE.PerspectiveCamera(
@@ -397,11 +392,11 @@ let currentSection = 0;
 
 window.addEventListener("scroll", () => {
   scrollY = window.scrollY;
-  const newSection = Math.round(scrollY / sizes.height);
+  const newSection = Math.round(scrollY) / sizes.height;
 
   if (newSection != currentSection) {
     if (newSection > 0 && newSection == 0) {
-      // scene.add(star);
+      // scene.add(keyboard);
     }
     if (newSection > 0 && currentSection < newSection) {
       gsap.to(pointLight.position, {
@@ -410,8 +405,8 @@ window.addEventListener("scroll", () => {
         y: `${pointLight.position.y - 4}`,
       });
 
-      const originalColor = { r: 204, g: 164, b: 9 };
-      const targetColor = { r: 255, g: 0, b: 0 };
+      // const originalColor = { r: 204, g: 164, b: 9 };
+      // const targetColor = { r: 255, g: 0, b: 0 };
       //keyUp(meshes[currentSection], originalColor, targetColor);
     } else if (newSection > 0 && currentSection > newSection) {
       gsap.to(pointLight.position, {
@@ -420,11 +415,11 @@ window.addEventListener("scroll", () => {
         y: `${pointLight.position.y + 4}`,
       });
 
-      const originalColor = { r: 204, g: 164, b: 9 };
-      const targetColor = { r: 255, g: 0, b: 0 };
+      // const originalColor = { r: 204, g: 164, b: 9 };
+      // const targetColor = { r: 255, g: 0, b: 0 };
     } else {
-      const referenceColor = star.children[1].children[0].material.color;
-      const object = star.children[1];
+      // const referenceColor = keyboard.children[1].children[0].material.color;
+      // const object = keyboard.children[1];
 
       // const ref = {
       //   r: Math.round(originalColor.r * 255),
@@ -444,17 +439,6 @@ window.addEventListener("scroll", () => {
   }
 });
 
-const cursor = {};
-cursor.x = 0;
-cursor.y = 0;
-window.addEventListener("mousemove", (e) => {
-  cursor.x = e.clientX / sizes.width - 0.5;
-  cursor.y = e.clientY / sizes.height - 0.5;
-});
-
-const mouse = new THREE.Vector2();
-const rayCaster = new THREE.Raycaster();
-
 window.addEventListener("resize", () => {
   // Update sizes
   sizes.width = window.innerWidth;
@@ -469,17 +453,27 @@ window.addEventListener("resize", () => {
   iframeRenderer.setSize(sizes.width, sizes.height);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 });
+///////////////////////////     Ray caster      //////////////////////////
+const cursor = {};
+cursor.x = 0;
+cursor.y = 0;
+window.addEventListener("mousemove", (e) => {
+  cursor.x = e.clientX / sizes.width - 0.5;
+  cursor.y = e.clientY / sizes.height - 0.5;
+});
 
+const mouse = new THREE.Vector2();
+const rayCaster = new THREE.Raycaster();
 document.addEventListener("click", () => {
   rayCaster.setFromCamera(mouse, camera);
-  if (star) {
-    click(star, rayCaster);
+  if (keyboard) {
+    click(keyboard, rayCaster);
   }
-  if (star_1) {
-    click(star_1, rayCaster);
+  if (keyboard_1) {
+    click(keyboard_1, rayCaster);
   }
-  if (star_2) {
-    click(star_2, rayCaster);
+  if (keyboard_2) {
+    click(keyboard_2, rayCaster);
   }
 
   if (linkedin) {
@@ -489,25 +483,6 @@ document.addEventListener("click", () => {
     openLink(github, rayCaster);
   }
 });
-
-// if (
-//   navigator.userAgent.includes(
-//     "Android" ||
-//       "webOS" ||
-//       "iPhone" ||
-//       "iPad" ||
-//       "iPod" ||
-//       "BlackBerry" ||
-//       "IEMobile" ||
-//       "Opera Mini"
-//   )
-// ) {
-//   // true for mobile device
-//   document.write("mobile device");
-// } else {
-//   // false for not mobile device
-//   document.write("not mobile device");
-// }
 
 let previousTime = 0;
 const tick = () => {
@@ -520,16 +495,16 @@ const tick = () => {
   // github.rotation.y += Math.PI * 0.5;
 
   ////
-  if (github && linkedin && star && star_1 && star_2) {
+  if (github && linkedin && keyboard && keyboard_1 && keyboard_2) {
     rayCaster.setFromCamera(mouse, camera);
     const objects = new THREE.Group();
-    objects.add(github, linkedin, star, star_1, star_2); // star_3);
+    objects.add(github, linkedin, keyboard, keyboard_1, keyboard_2); // keyboard_3);
     scene.add(objects);
     changeCursor(objects, rayCaster);
   }
   ///////
-  if (star) {
-    for (const child of star.children) {
+  if (keyboard) {
+    for (const child of keyboard.children) {
       //const originalColor = { r: 204, g: 164, b: 9 };
       const caseID = child.name;
 
@@ -577,7 +552,6 @@ const tick = () => {
     (parallaxY - cameraGroup.position.y) * 4 * deltaTime;
 
   renderer.render(scene, camera);
-
   iframeRenderer.render(scene, camera);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
