@@ -168,8 +168,9 @@ span a {
 #home i,
 #skills i,
 #contact i {
-  left: 33%;
-  top: 30%;
+  left: 29%;
+  top: 29%;
+  font-size: 1rem;
 }
 
 span:hover {
@@ -301,6 +302,6 @@ iframe:hover {
   }
   span i,
   span a {
-    font-size: 0.4rem;
+    font-size: 0.55rem;
   }
 }
