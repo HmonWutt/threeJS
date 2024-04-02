@@ -17,6 +17,7 @@ body {
   /* position: relative; */
   height: 100%;
   width: 100vw;
+  margin: 0 auto;
 }
 h1,
 h2,
@@ -250,17 +251,27 @@ iframe:hover {
 
 #skills {
 } */
-
-.down-arrow {
+#instruction {
   position: absolute;
-  top: 40vh;
-  left: 50%;
+  width: 100%;
+  top: 5rem;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  color: wheat;
+  animation: jumpInfinite 1s 5000;
+  font-size: 2rem;
+  gap: 1rem;
+}
+.down-arrow {
   width: 30px;
   height: 30px;
   border-bottom: 8px solid;
   border-right: 8px solid;
   border-radius: 8px;
-  transform: rotateZ(45deg) translateX(-45%);
+  transform: rotateZ(-135deg);
+  color: #000;
 }
 @keyframes jumpInfinite {
   0% {
@@ -273,20 +284,10 @@ iframe:hover {
     margin-top: 0;
   }
 }
-.down-arrow {
+/* .down-arrow {
   animation: jumpInfinite 1s 3000;
-}
-#instruction {
-  position: absolute;
-  width: 100%;
-  top: 5rem;
-  display: flex;
-  justify-content: center;
-  color: wheat;
-  margin: 0;
-  padding: 0;
-  animation: jumpInfinite 1s 5000;
-}
+} */
+
 @media only screen and (max-width: 700px) {
   span {
     font-size: 0.6rem;
