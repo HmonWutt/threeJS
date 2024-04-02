@@ -8,6 +8,7 @@
 
 html {
   background: #302d31;
+
   /* background: #c8a2c8; */
   /* background: #d3e8d3; */
 }
@@ -15,6 +16,7 @@ body {
   overflow-x: hidden;
   /* position: relative; */
   height: 100%;
+  width: 100vw;
 }
 h1,
 h2,
@@ -30,6 +32,17 @@ h4 {
     1px 10px 1px #919191, 1px 18px 6px rgba(16, 16, 16, 0.4),
     1px 22px 10px rgba(16, 16, 16, 0.2), 1px 25px 35px rgba(16, 16, 16, 0.2),
     1px 30px 60px rgba(16, 16, 16, 0.4);
+}
+a:link {
+  color: rgb(0, 174, 255);
+  text-decoration: none;
+  font-size: 1rem;
+}
+
+a:visited {
+  color: green;
+  text-decoration: none;
+  font-size: 1rem;
 }
 ul {
   display: flex;
@@ -190,10 +203,11 @@ span:active {
   position: absolute;
   top: 380vh;
   display: flex;
+  color: wheat;
   justify-items: center;
   font-size: 1rem;
   width: 100vw;
-  padding-left: 35em;
+  padding-left: 10vw;
   text-transform: none;
 }
 li {
@@ -235,6 +249,43 @@ iframe:hover {
 
 #skills {
 } */
+
+.down-arrow {
+  position: absolute;
+  top: 40vh;
+  left: 50%;
+  width: 30px;
+  height: 30px;
+  border-bottom: 8px solid;
+  border-right: 8px solid;
+  border-radius: 8px;
+  transform: rotateZ(45deg) translateX(-45%);
+}
+@keyframes jumpInfinite {
+  0% {
+    margin-top: 0;
+  }
+  50% {
+    margin-top: 20px;
+  }
+  100% {
+    margin-top: 0;
+  }
+}
+.down-arrow {
+  animation: jumpInfinite 1s 3000;
+}
+#instruction {
+  position: absolute;
+  width: 100%;
+  top: 5rem;
+  display: flex;
+  justify-content: center;
+  color: wheat;
+  margin: 0;
+  padding: 0;
+  animation: jumpInfinite 1s 5000;
+}
 @media only screen and (max-width: 700px) {
   span {
     font-size: 0.6rem;
